@@ -14,6 +14,8 @@ import 'package:otakulog/features/stats/widgets/share/lifetime_stats_card.dart';
 import 'package:otakulog/features/stats/widgets/share/monthly_summary_card.dart';
 import 'package:otakulog/features/stats/widgets/share/share_preview_sheet.dart';
 import 'package:intl/intl.dart';
+import 'package:otakulog/domain/entities/anime.dart';
+import 'package:otakulog/domain/entities/manga.dart';
 
 enum StatsShareType { monthly, lifetime }
 
@@ -51,6 +53,14 @@ class StatsScreen extends ConsumerWidget {
             final hasWeeklyActivity =
                 weeklySummary.values.any((value) => value > 0);
             final todayMinutes = statsService.calculateTodayMinutes(sessions);
+            final totalRewatches = libraryItems.fold<int>(
+              0,
+              (sum, item) {
+                if (item is AnimeEntity) return sum + item.rewatchCount;
+                if (item is MangaEntity) return sum + item.rereadCount;
+                return sum;
+              },
+            );
 
             if (totalMinutes == 0 && libraryItems.isEmpty) {
               return _buildFirstRunEmptyState(context);
@@ -105,6 +115,13 @@ class StatsScreen extends ConsumerWidget {
                       '${libraryItems.length}',
                       suffix: 'items',
                       icon: Icons.collections_bookmark_outlined,
+                      color: AppTheme.accent,
+                    ),
+                    _buildAnimatedStatCard(
+                      'Rewatches',
+                      '$totalRewatches',
+                      suffix: 'times',
+                      icon: Icons.replay,
                       color: AppTheme.accent,
                     ),
                   ],
