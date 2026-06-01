@@ -116,11 +116,7 @@ class LibraryScreen extends ConsumerWidget {
                   ],
                 );
               },
-              loading: () => ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: 5,
-                itemBuilder: (_, __) => _buildSkeletonCard(),
-              ),
+              loading: () => _buildSkeletonList(),
               error: (error, _) => Center(child: Text('Error: $error')),
             ),
           ),
@@ -334,6 +330,14 @@ class LibraryScreen extends ConsumerWidget {
       case LibrarySortOption.rating:
         return 'Highest Rated';
     }
+  }
+
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 5,
+      itemBuilder: (_, __) => _buildSkeletonCard(),
+    );
   }
 
   Widget _buildSkeletonCard() {
