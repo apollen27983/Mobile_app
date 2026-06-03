@@ -15,6 +15,7 @@ import 'package:otakulog/features/stats/widgets/share/monthly_summary_card.dart'
 import 'package:otakulog/features/stats/widgets/share/share_preview_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:otakulog/domain/entities/goal.dart';
+import 'package:otakulog/features/stats/models/goal_progress.dart';
 
 
 enum StatsShareType { monthly, lifetime }
@@ -158,6 +159,29 @@ goalsAsync.when(
                     color: AppTheme.secondaryText,
                   ),
                 ),
+                const SizedBox(height: 8),
+
+Row(
+  mainAxisAlignment: MainAxisAlignment.end,
+  children: [
+    IconButton(
+      icon: const Icon(Icons.edit_outlined),
+      onPressed: () {
+        _showEditGoalDialog(context, ref, goal);
+      },
+    ),
+    IconButton(
+      icon: const Icon(Icons.delete_outline),
+      onPressed: () async {
+        await ref
+            .read(goalRepositoryProvider)
+            .deleteGoal(goal.id);
+
+        ref.invalidate(monthlyGoalProgressProvider);
+      },
+    ),
+  ],
+),
               ],
             ),
           ),
@@ -740,4 +764,60 @@ void _showGoalDialog(BuildContext context, WidgetRef ref) {
 ],
 ),
 );
+}
+void _showEditGoalDialog(
+  BuildContext context,
+  WidgetRef ref,
+  GoalProgress goal,
+) {
+  final controller =
+      TextEditingController(text: goal.target.toString());
+
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text('Edit Goal'),
+      content: TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        decoration: const InputDecoration(
+          labelText: 'Target Value',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final target = int.tryParse(controller.text);
+
+if (target == null) return;
+
+final updatedGoal = GoalEntity(
+  id: goal.id,
+  goalType: goal.goalType == 'animeEpisodes'
+      ? GoalType.animeEpisodes
+      : GoalType.mangaChapters,
+  targetValue: target,
+  month: DateTime.now().month,
+  year: DateTime.now().year,
+);
+
+await ref
+    .read(goalRepositoryProvider)
+    .updateGoal(updatedGoal);
+
+ref.invalidate(monthlyGoalProgressProvider);
+
+if (context.mounted) {
+  Navigator.pop(context);
+}
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    ),
+  );
 }

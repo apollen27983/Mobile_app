@@ -28,6 +28,20 @@ class GoalRepositoryImpl implements GoalRepository {
       return false;
     }
   }
+  @override
+Future<bool> updateGoal(GoalEntity goal) async {
+  try {
+    await isar.writeTxn(() async {
+      await isar.goalModels.put(
+        GoalMapper.toModel(goal),
+      );
+    });
+
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
   @override
   Future<bool> deleteGoal(String id) async {

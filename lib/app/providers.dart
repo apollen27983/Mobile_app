@@ -254,6 +254,7 @@ final monthlyGoalProgressProvider =
 
   return goals.map((goal) {
     return GoalProgress(
+      id: goal.id,
       goalType: goal.goalType.name,
       target: goal.targetValue,
       current: goal.goalType == GoalType.animeEpisodes
