@@ -160,28 +160,49 @@ goalsAsync.when(
                   ),
                 ),
                 const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () {
+                        _showEditGoalDialog(context, ref, goal);
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      onPressed: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text('Delete Goal'),
+                            content: const Text(
+                              'Are you sure you want to delete this goal?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        );
 
-Row(
-  mainAxisAlignment: MainAxisAlignment.end,
-  children: [
-    IconButton(
-      icon: const Icon(Icons.edit_outlined),
-      onPressed: () {
-        _showEditGoalDialog(context, ref, goal);
-      },
-    ),
-    IconButton(
-      icon: const Icon(Icons.delete_outline),
-      onPressed: () async {
-        await ref
-            .read(goalRepositoryProvider)
-            .deleteGoal(goal.id);
+                        if (confirm != true) return;
 
-        ref.invalidate(monthlyGoalProgressProvider);
-      },
-    ),
-  ],
-),
+                        await ref
+                            .read(goalRepositoryProvider)
+                            .deleteGoal(goal.id);
+
+                        ref.invalidate(monthlyGoalProgressProvider);
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
