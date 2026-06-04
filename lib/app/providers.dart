@@ -33,6 +33,7 @@ import 'package:otakulog/core/config/cloud_runtime.dart';
 import 'package:otakulog/core/services/reminder_service.dart';
 import 'package:otakulog/core/services/sync_service.dart';
 import 'package:otakulog/core/services/local_backup_service.dart';
+import 'package:otakulog/core/services/webdav_service.dart';
 import 'package:otakulog/core/services/wrapped_trigger_service.dart';
 import 'package:otakulog/features/activity_models.dart';
 import 'package:otakulog/features/cloud/models/cloud_availability_state.dart';
@@ -41,6 +42,7 @@ import 'package:otakulog/features/search/models/search_result_item.dart';
 import 'package:otakulog/features/stats/models/wrapped_summary.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Services
 final anilistServiceProvider =
@@ -95,6 +97,26 @@ final localBackupServiceProvider = Provider<LocalBackupService>((ref) {
     backupMapper: ref.watch(backupMapperProvider),
     syncService: ref.watch(syncServiceProvider),
     isar: IsarService.instance,
+  );
+});
+final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
+  return const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
+});
+final webDavServiceProvider = Provider<WebDavService>((ref) {
+  return WebDavService(
+    userRepository: ref.watch(userRepositoryProvider),
+    animeRepository: ref.watch(animeRepositoryProvider),
+    mangaRepository: ref.watch(mangaRepositoryProvider),
+    sessionRepository: ref.watch(sessionRepositoryProvider),
+    retentionPreferencesService: ref.watch(retentionPreferencesServiceProvider),
+    backupMapper: ref.watch(backupMapperProvider),
+    syncService: ref.watch(syncServiceProvider),
+    isar: IsarService.instance,
+    secureStorage: ref.watch(secureStorageProvider),
   );
 });
 final cloudDegradedProvider = StateProvider<bool>((ref) => false);
