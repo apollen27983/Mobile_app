@@ -6,12 +6,19 @@ part 'goal_model.g.dart';
 class GoalModel {
   Id id = Isar.autoIncrement;
 
-  @Index(unique: true, replace: true)
-  late String goalType;
+  @Index(
+  composite: [
+    CompositeIndex('month'),
+    CompositeIndex('year'),
+  ],
+  unique: true,
+  replace: true,
+)
+late String goalType;
 
-  late int targetValue;
+late int targetValue;
 
-  late int month;
+late int month;
 
-  late int year;
+late int year;
 }

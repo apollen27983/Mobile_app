@@ -44,9 +44,9 @@ const GoalModelSchema = CollectionSchema(
   deserializeProp: _goalModelDeserializeProp,
   idName: r'id',
   indexes: {
-    r'goalType': IndexSchema(
-      id: 5010474171674925822,
-      name: r'goalType',
+    r'goalType_month_year': IndexSchema(
+      id: -8501649641600268170,
+      name: r'goalType_month_year',
       unique: true,
       replace: true,
       properties: [
@@ -54,6 +54,16 @@ const GoalModelSchema = CollectionSchema(
           name: r'goalType',
           type: IndexType.hash,
           caseSensitive: true,
+        ),
+        IndexPropertySchema(
+          name: r'month',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+        IndexPropertySchema(
+          name: r'year',
+          type: IndexType.value,
+          caseSensitive: false,
         )
       ],
     )
@@ -136,57 +146,93 @@ void _goalModelAttach(IsarCollection<dynamic> col, Id id, GoalModel object) {
 }
 
 extension GoalModelByIndex on IsarCollection<GoalModel> {
-  Future<GoalModel?> getByGoalType(String goalType) {
-    return getByIndex(r'goalType', [goalType]);
+  Future<GoalModel?> getByGoalTypeMonthYear(
+      String goalType, int month, int year) {
+    return getByIndex(r'goalType_month_year', [goalType, month, year]);
   }
 
-  GoalModel? getByGoalTypeSync(String goalType) {
-    return getByIndexSync(r'goalType', [goalType]);
+  GoalModel? getByGoalTypeMonthYearSync(String goalType, int month, int year) {
+    return getByIndexSync(r'goalType_month_year', [goalType, month, year]);
   }
 
-  Future<bool> deleteByGoalType(String goalType) {
-    return deleteByIndex(r'goalType', [goalType]);
+  Future<bool> deleteByGoalTypeMonthYear(String goalType, int month, int year) {
+    return deleteByIndex(r'goalType_month_year', [goalType, month, year]);
   }
 
-  bool deleteByGoalTypeSync(String goalType) {
-    return deleteByIndexSync(r'goalType', [goalType]);
+  bool deleteByGoalTypeMonthYearSync(String goalType, int month, int year) {
+    return deleteByIndexSync(r'goalType_month_year', [goalType, month, year]);
   }
 
-  Future<List<GoalModel?>> getAllByGoalType(List<String> goalTypeValues) {
-    final values = goalTypeValues.map((e) => [e]).toList();
-    return getAllByIndex(r'goalType', values);
+  Future<List<GoalModel?>> getAllByGoalTypeMonthYear(
+      List<String> goalTypeValues,
+      List<int> monthValues,
+      List<int> yearValues) {
+    final len = goalTypeValues.length;
+    assert(monthValues.length == len && yearValues.length == len,
+        'All index values must have the same length');
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([goalTypeValues[i], monthValues[i], yearValues[i]]);
+    }
+
+    return getAllByIndex(r'goalType_month_year', values);
   }
 
-  List<GoalModel?> getAllByGoalTypeSync(List<String> goalTypeValues) {
-    final values = goalTypeValues.map((e) => [e]).toList();
-    return getAllByIndexSync(r'goalType', values);
+  List<GoalModel?> getAllByGoalTypeMonthYearSync(List<String> goalTypeValues,
+      List<int> monthValues, List<int> yearValues) {
+    final len = goalTypeValues.length;
+    assert(monthValues.length == len && yearValues.length == len,
+        'All index values must have the same length');
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([goalTypeValues[i], monthValues[i], yearValues[i]]);
+    }
+
+    return getAllByIndexSync(r'goalType_month_year', values);
   }
 
-  Future<int> deleteAllByGoalType(List<String> goalTypeValues) {
-    final values = goalTypeValues.map((e) => [e]).toList();
-    return deleteAllByIndex(r'goalType', values);
+  Future<int> deleteAllByGoalTypeMonthYear(List<String> goalTypeValues,
+      List<int> monthValues, List<int> yearValues) {
+    final len = goalTypeValues.length;
+    assert(monthValues.length == len && yearValues.length == len,
+        'All index values must have the same length');
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([goalTypeValues[i], monthValues[i], yearValues[i]]);
+    }
+
+    return deleteAllByIndex(r'goalType_month_year', values);
   }
 
-  int deleteAllByGoalTypeSync(List<String> goalTypeValues) {
-    final values = goalTypeValues.map((e) => [e]).toList();
-    return deleteAllByIndexSync(r'goalType', values);
+  int deleteAllByGoalTypeMonthYearSync(List<String> goalTypeValues,
+      List<int> monthValues, List<int> yearValues) {
+    final len = goalTypeValues.length;
+    assert(monthValues.length == len && yearValues.length == len,
+        'All index values must have the same length');
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([goalTypeValues[i], monthValues[i], yearValues[i]]);
+    }
+
+    return deleteAllByIndexSync(r'goalType_month_year', values);
   }
 
-  Future<Id> putByGoalType(GoalModel object) {
-    return putByIndex(r'goalType', object);
+  Future<Id> putByGoalTypeMonthYear(GoalModel object) {
+    return putByIndex(r'goalType_month_year', object);
   }
 
-  Id putByGoalTypeSync(GoalModel object, {bool saveLinks = true}) {
-    return putByIndexSync(r'goalType', object, saveLinks: saveLinks);
+  Id putByGoalTypeMonthYearSync(GoalModel object, {bool saveLinks = true}) {
+    return putByIndexSync(r'goalType_month_year', object, saveLinks: saveLinks);
   }
 
-  Future<List<Id>> putAllByGoalType(List<GoalModel> objects) {
-    return putAllByIndex(r'goalType', objects);
+  Future<List<Id>> putAllByGoalTypeMonthYear(List<GoalModel> objects) {
+    return putAllByIndex(r'goalType_month_year', objects);
   }
 
-  List<Id> putAllByGoalTypeSync(List<GoalModel> objects,
+  List<Id> putAllByGoalTypeMonthYearSync(List<GoalModel> objects,
       {bool saveLinks = true}) {
-    return putAllByIndexSync(r'goalType', objects, saveLinks: saveLinks);
+    return putAllByIndexSync(r'goalType_month_year', objects,
+        saveLinks: saveLinks);
   }
 }
 
@@ -266,29 +312,29 @@ extension GoalModelQueryWhere
     });
   }
 
-  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause> goalTypeEqualTo(
-      String goalType) {
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeEqualToAnyMonthYear(String goalType) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'goalType',
+        indexName: r'goalType_month_year',
         value: [goalType],
       ));
     });
   }
 
-  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause> goalTypeNotEqualTo(
-      String goalType) {
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeNotEqualToAnyMonthYear(String goalType) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'goalType',
+              indexName: r'goalType_month_year',
               lower: [],
               upper: [goalType],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'goalType',
+              indexName: r'goalType_month_year',
               lower: [goalType],
               includeLower: false,
               upper: [],
@@ -296,18 +342,213 @@ extension GoalModelQueryWhere
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'goalType',
+              indexName: r'goalType_month_year',
               lower: [goalType],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'goalType',
+              indexName: r'goalType_month_year',
               lower: [],
               upper: [goalType],
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeMonthEqualToAnyYear(String goalType, int month) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'goalType_month_year',
+        value: [goalType, month],
+      ));
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeEqualToMonthNotEqualToAnyYear(String goalType, int month) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'goalType_month_year',
+              lower: [goalType],
+              upper: [goalType, month],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'goalType_month_year',
+              lower: [goalType, month],
+              includeLower: false,
+              upper: [goalType],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'goalType_month_year',
+              lower: [goalType, month],
+              includeLower: false,
+              upper: [goalType],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'goalType_month_year',
+              lower: [goalType],
+              upper: [goalType, month],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeEqualToMonthGreaterThanAnyYear(
+    String goalType,
+    int month, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'goalType_month_year',
+        lower: [goalType, month],
+        includeLower: include,
+        upper: [goalType],
+      ));
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeEqualToMonthLessThanAnyYear(
+    String goalType,
+    int month, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'goalType_month_year',
+        lower: [goalType],
+        upper: [goalType, month],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeEqualToMonthBetweenAnyYear(
+    String goalType,
+    int lowerMonth,
+    int upperMonth, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'goalType_month_year',
+        lower: [goalType, lowerMonth],
+        includeLower: includeLower,
+        upper: [goalType, upperMonth],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeMonthYearEqualTo(String goalType, int month, int year) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'goalType_month_year',
+        value: [goalType, month, year],
+      ));
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeMonthEqualToYearNotEqualTo(String goalType, int month, int year) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'goalType_month_year',
+              lower: [goalType, month],
+              upper: [goalType, month, year],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'goalType_month_year',
+              lower: [goalType, month, year],
+              includeLower: false,
+              upper: [goalType, month],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'goalType_month_year',
+              lower: [goalType, month, year],
+              includeLower: false,
+              upper: [goalType, month],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'goalType_month_year',
+              lower: [goalType, month],
+              upper: [goalType, month, year],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeMonthEqualToYearGreaterThan(
+    String goalType,
+    int month,
+    int year, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'goalType_month_year',
+        lower: [goalType, month, year],
+        includeLower: include,
+        upper: [goalType, month],
+      ));
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeMonthEqualToYearLessThan(
+    String goalType,
+    int month,
+    int year, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'goalType_month_year',
+        lower: [goalType, month],
+        upper: [goalType, month, year],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<GoalModel, GoalModel, QAfterWhereClause>
+      goalTypeMonthEqualToYearBetween(
+    String goalType,
+    int month,
+    int lowerYear,
+    int upperYear, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'goalType_month_year',
+        lower: [goalType, month, lowerYear],
+        includeLower: includeLower,
+        upper: [goalType, month, upperYear],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }
