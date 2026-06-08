@@ -117,7 +117,7 @@ class GoogleDriveSyncService {
         // Download existing backup
         final drive.Media media = await driveApi.files.get(
           remoteFileId!,
-          downloadOptions: drive.DownloadOptions.metadataPlatform,
+          downloadOptions: drive.DownloadOptions.fullMedia,
         ) as drive.Media;
 
         final List<int> bytes = [];
