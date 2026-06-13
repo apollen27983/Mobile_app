@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:otakulog/app/providers.dart';
 import 'package:otakulog/app/theme.dart';
+import 'package:otakulog/domain/entities/manga.dart';
+import 'package:otakulog/features/search/models/search_filters.dart';
 import 'package:otakulog/features/downloads/download_queue_notifier.dart';
 import 'package:otakulog/features/reader/manga_reader_notifier.dart';
 
@@ -87,16 +89,31 @@ class DownloadsManagerScreen extends ConsumerWidget {
                       return InkWell(
                         borderRadius: BorderRadius.circular(18),
                         onTap: () async {
-                          final manga = await ref.read(mangaByIdProvider(item.mangaId).future);
-                          if (!context.mounted) return;
+                          var manga = await ref.read(mangaByIdProvider(item.mangaId).future);
                           if (manga == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('This manga is no longer in your library.'),
+                            // Construct a fallback/skeleton MangaEntity for offline viewing
+                            manga = MangaEntity(
+                              id: item.mangaId,
+                              title: (item.mangaTitle?.trim().isNotEmpty ?? false)
+                                  ? item.mangaTitle!.trim()
+                                  : 'Unknown Manga',
+                              coverImage: '', // Fallback empty cover
+                              totalChapters: 0,
+                              currentChapter: 0,
+                              status: MangaStatus.reading,
+                              genres: const [],
+                              description: 'Downloaded for offline reading',
+                              isAdult: item.isAdult,
+                              createdAt: DateTime.now(),
+                              updatedAt: DateTime.now(),
+                              mangaCategory: MangaCategoryFilter.values.firstWhere(
+                                (c) => c.name == item.mangaCategory,
+                                orElse: () => MangaCategoryFilter.manga,
                               ),
                             );
-                            return;
                           }
+
+                          if (!context.mounted) return;
 
                           context.push(
                             '/reader/manga',
