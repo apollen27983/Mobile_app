@@ -21,6 +21,7 @@ class RetentionPreferences {
   // WebDAV preferences (status/non-sensitive only)
   final String? webdavLastSyncedAtIso;
   final String? webdavLastError;
+  final String webdavSyncFrequency;
 
   // Google Drive preferences (status/non-sensitive only)
   final String? googleDriveLastSyncedAtIso;
@@ -42,6 +43,7 @@ class RetentionPreferences {
     this.cachedRecommendations = const [],
     this.webdavLastSyncedAtIso,
     this.webdavLastError,
+    this.webdavSyncFrequency = 'off',
     this.googleDriveLastSyncedAtIso,
     this.googleDriveLastError,
   });
@@ -77,6 +79,7 @@ class RetentionPreferences {
     List<Map<String, dynamic>>? cachedRecommendations,
     String? webdavLastSyncedAtIso,
     String? webdavLastError,
+    String? webdavSyncFrequency,
     String? googleDriveLastSyncedAtIso,
     String? googleDriveLastError,
   }) {
@@ -105,6 +108,7 @@ class RetentionPreferences {
       cachedRecommendations: cachedRecommendations ?? this.cachedRecommendations,
       webdavLastSyncedAtIso: webdavLastSyncedAtIso ?? this.webdavLastSyncedAtIso,
       webdavLastError: webdavLastError ?? this.webdavLastError,
+      webdavSyncFrequency: webdavSyncFrequency ?? this.webdavSyncFrequency,
       googleDriveLastSyncedAtIso: googleDriveLastSyncedAtIso ?? this.googleDriveLastSyncedAtIso,
       googleDriveLastError: googleDriveLastError ?? this.googleDriveLastError,
     );
@@ -127,6 +131,7 @@ class RetentionPreferences {
       'cachedRecommendations': cachedRecommendations,
       'webdavLastSyncedAtIso': webdavLastSyncedAtIso,
       'webdavLastError': webdavLastError,
+      'webdavSyncFrequency': webdavSyncFrequency,
       'googleDriveLastSyncedAtIso': googleDriveLastSyncedAtIso,
       'googleDriveLastError': googleDriveLastError,
     };
@@ -155,6 +160,7 @@ class RetentionPreferences {
       }).toList(),
       webdavLastSyncedAtIso: json['webdavLastSyncedAtIso']?.toString(),
       webdavLastError: json['webdavLastError']?.toString(),
+      webdavSyncFrequency: json['webdavSyncFrequency']?.toString() ?? 'off',
       googleDriveLastSyncedAtIso: json['googleDriveLastSyncedAtIso']?.toString(),
       googleDriveLastError: json['googleDriveLastError']?.toString(),
     );

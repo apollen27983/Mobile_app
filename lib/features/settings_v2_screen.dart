@@ -17,6 +17,7 @@ import 'package:otakulog/features/cloud/models/cloud_availability_state.dart';
 import 'package:otakulog/features/downloads/download_queue_notifier.dart';
 import 'package:otakulog/features/downloads/downloads_manager_screen.dart';
 import 'package:otakulog/core/services/local_backup_service.dart';
+import 'package:otakulog/core/services/background_sync_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:otakulog/core/config/cloud_runtime.dart';
@@ -40,6 +41,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   String _adultMode = 'off';
   String _searchMedium = 'anime';
+  String _webdavSyncFrequency = 'off';
   bool _blurCovers = false;
   bool _notificationsEnabled = true;
   bool _preferDataSaverDownloads = true;
@@ -887,6 +889,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: const TextStyle(color: AppTheme.primaryText),
             decoration: _decoration('Enter app password or token'),
           ),
+          const SizedBox(height: 12),
+          _fieldLabel('Automated Sync Frequency'),
+          const SizedBox(height: 8),
+          _dropdown<String>(
+            value: _webdavSyncFrequency,
+            items: const ['off', '12h', '24h'],
+            onChanged: (value) => setState(() => _webdavSyncFrequency = value!),
+          ),
           const SizedBox(height: 16),
           if (lastSynced != null) ...[
             Text(
@@ -919,46 +929,44 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 16),
           ],
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _isTestingWebdav ? null : _testWebdavConnection,
-                  icon: _isTestingWebdav
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppTheme.accent,
-                          ),
-                        )
-                      : (_webdavConnectionSuccess == true
-                          ? const Icon(Icons.check_circle_outline, color: Colors.green)
-                          : (_webdavConnectionSuccess == false
-                              ? const Icon(Icons.error_outline, color: Colors.redAccent)
-                              : const Icon(Icons.sync_alt_outlined))),
-                  label: Text(_isTestingWebdav ? 'TESTING...' : 'TEST CONNECTION'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _isWebdavSyncing ? null : _showWebdavSyncConfirmDialog,
-                  icon: _isWebdavSyncing
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.cloud_sync_outlined),
-                  label: Text(_isWebdavSyncing ? 'SYNCING...' : 'SYNC NOW'),
-                ),
-              ),
-            ],
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _isTestingWebdav ? null : _testWebdavConnection,
+              icon: _isTestingWebdav
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppTheme.accent,
+                      ),
+                    )
+                  : (_webdavConnectionSuccess == true
+                      ? const Icon(Icons.check_circle_outline, color: Colors.green)
+                      : (_webdavConnectionSuccess == false
+                          ? const Icon(Icons.error_outline, color: Colors.redAccent)
+                          : const Icon(Icons.sync_alt_outlined))),
+              label: Text(_isTestingWebdav ? 'TESTING...' : 'TEST CONNECTION'),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _isWebdavSyncing ? null : _showWebdavSyncConfirmDialog,
+              icon: _isWebdavSyncing
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.cloud_sync_outlined),
+              label: Text(_isWebdavSyncing ? 'SYNCING...' : 'SYNC NOW'),
+            ),
           ),
         ],
       ),
@@ -1591,6 +1599,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _blurCovers = user.blurCoverInPublic;
     _notificationsEnabled = prefs?.notificationsEnabled ?? true;
     _preferDataSaverDownloads = prefs?.preferDataSaverDownloads ?? true;
+    _webdavSyncFrequency = prefs?.webdavSyncFrequency ?? 'off';
     _initialized = true;
   }
 
@@ -1618,9 +1627,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             prefs.copyWith(
               notificationsEnabled: _notificationsEnabled,
               preferDataSaverDownloads: _preferDataSaverDownloads,
+              webdavSyncFrequency: _webdavSyncFrequency,
               lastAppOpenedAtIso: DateTime.now().toIso8601String(),
             ),
           );
+
+      try {
+        await BackgroundSyncManager.updateSchedule(_webdavSyncFrequency);
+      } catch (_) {}
 
       // Save WebDAV credentials securely
       final secureStorage = ref.read(secureStorageProvider);
