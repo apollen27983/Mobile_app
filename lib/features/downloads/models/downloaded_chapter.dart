@@ -9,6 +9,8 @@ class DownloadedChapter {
   final int totalPages;
   final DateTime downloadedAt;
   final int totalBytes;
+  final bool isAdult;
+  final String? mangaCategory;
 
   const DownloadedChapter({
     required this.chapterId,
@@ -21,6 +23,8 @@ class DownloadedChapter {
     required this.totalPages,
     required this.downloadedAt,
     required this.totalBytes,
+    this.isAdult = false,
+    this.mangaCategory,
   });
 
   Map<String, dynamic> toJson() {
@@ -35,6 +39,8 @@ class DownloadedChapter {
       'totalPages': totalPages,
       'downloadedAt': downloadedAt.toIso8601String(),
       'totalBytes': totalBytes,
+      'isAdult': isAdult,
+      'mangaCategory': mangaCategory,
     };
   }
 
@@ -54,6 +60,8 @@ class DownloadedChapter {
       downloadedAt: DateTime.tryParse(json['downloadedAt']?.toString() ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
       totalBytes: (json['totalBytes'] as num?)?.toInt() ?? 0,
+      isAdult: json['isAdult'] as bool? ?? false,
+      mangaCategory: json['mangaCategory']?.toString(),
     );
   }
 }

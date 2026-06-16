@@ -69,12 +69,16 @@ class DownloadRequest {
   final String? mangaDexId;
   final String? mangaTitle;
   final MangaDexChapter chapter;
+  final bool isAdult;
+  final String? mangaCategory;
 
   const DownloadRequest({
     required this.mangaId,
     this.mangaDexId,
     this.mangaTitle,
     required this.chapter,
+    this.isAdult = false,
+    this.mangaCategory,
   });
 }
 
@@ -97,6 +101,8 @@ class DownloadQueueNotifier extends StateNotifier<DownloadQueueState> {
     String? mangaDexId,
     String? mangaTitle,
     required MangaDexChapter chapter,
+    bool isAdult = false,
+    String? mangaCategory,
   }) async {
     final existing = await store.getByChapterId(chapter.id);
     if (existing != null) {
@@ -119,6 +125,8 @@ class DownloadQueueNotifier extends StateNotifier<DownloadQueueState> {
         mangaDexId: mangaDexId,
         mangaTitle: mangaTitle,
         chapter: chapter,
+        isAdult: isAdult,
+        mangaCategory: mangaCategory,
       ),
     );
     _setProgress(
@@ -217,6 +225,8 @@ class DownloadQueueNotifier extends StateNotifier<DownloadQueueState> {
         totalPages: localPaths.length,
         downloadedAt: DateTime.now(),
         totalBytes: totalBytes,
+        isAdult: request.isAdult,
+        mangaCategory: request.mangaCategory,
       ),
     );
 

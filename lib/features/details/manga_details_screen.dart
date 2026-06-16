@@ -845,6 +845,8 @@ class _ChapterSelectorSheetState extends ConsumerState<_ChapterSelectorSheet>
                                   mangaTitle: widget.manga.title,
                                   progress: progress,
                                   isDownloaded: isDownloaded,
+                                  isAdult: widget.manga.isAdult,
+                                  mangaCategory: widget.manga.mangaCategory.name,
                                 ),
                                 trailing: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -937,6 +939,8 @@ class _ChapterDownloadButton extends ConsumerWidget {
   final String? mangaTitle;
   final ChapterDownloadProgress progress;
   final bool isDownloaded;
+  final bool isAdult;
+  final String? mangaCategory;
 
   const _ChapterDownloadButton({
     required this.chapter,
@@ -945,6 +949,8 @@ class _ChapterDownloadButton extends ConsumerWidget {
     this.mangaTitle,
     required this.progress,
     required this.isDownloaded,
+    this.isAdult = false,
+    this.mangaCategory,
   });
 
   @override
@@ -968,6 +974,8 @@ class _ChapterDownloadButton extends ConsumerWidget {
                     mangaDexId: mangaDexId,
                     mangaTitle: mangaTitle,
                     chapter: chapter,
+                    isAdult: isAdult,
+                    mangaCategory: mangaCategory,
                   );
             },
       icon: progress.status == DownloadStatus.downloading
